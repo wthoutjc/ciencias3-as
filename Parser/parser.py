@@ -27,9 +27,16 @@ class Parser():
     
     def LRParser(self):
         pass
-    
+
     def parse_table(self):
         '''
-        este método genera el parse tree
+        este método genera la tabla de producciones
+        '''
+        pass
+
+    def parse(self):
+        '''
+        aca se construye el arbol sintactico
+        o la estructura de errores
         '''
         pass
