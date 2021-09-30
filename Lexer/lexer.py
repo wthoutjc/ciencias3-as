@@ -1,6 +1,6 @@
 import re
-from Lexer.token import Token
-from Lexer.keywords import *
+from token import Token
+from keywords import *
 
 
 class Lexer:
@@ -12,10 +12,12 @@ class Lexer:
         self.col = 1
         #self.errors = []
 
-    #Returns 
-    def next_Token(self):
+    #Returns the next token in the list structure
+    def token(self):
         if self.tokens:
             return self.tokens.pop(0)
+        else:
+            return None
 
     #Increments the indexes
     def go_on(self, delta=1):
@@ -44,16 +46,9 @@ class Lexer:
             if self.cchar() == '\n':    #Count new line
                 line += 1
                 self.col = 1
-            elif self.cchar() == '/' and self.nchar() == '/':   #Ignore single-line comments
+            elif self.cchar() == '#':   #Ignore single-line comments
                 while self.cchar() and self.nchar() != '\n':
                     self.go_on()
-            elif self.cchar() and (self.cchar() == '/' and self.nchar() == '*'):   #Ignore multi-line comments
-                while self.cchar() and (self.cchar() != '*' or self.nchar() != '/'):
-                    if self.cchar() == '\n':
-                        line += 1
-                        self.col = 1
-                    self.go_on()
-                self.go_on()
             elif self.cchar().isalpha():    #Begins with a letter
                 col = self.col
                 category, value, symbol = self.classify_alpha(self.curr_idx)
@@ -73,62 +68,21 @@ class Lexer:
             self.go_on()
         word = self.source[begin:self.next_idx]
         if word in RESERVED:
-            if word == 'false' or word == 'true':
-                return 'Reserved Literal', bool(word), word
-            if word == 'null':
-                return 'Reserved Literal', None, word
-            return 'Reserved', RESERVED[word], word
+            return 'Reserved', word, word
         else:
-            return 'Identifier', word, word
+            return 'Identifier', word, 'ID'
     
     def classify_number(self, begin):
-        value = 'Unknown'
-        category = 'Unknown'
+        value = int(self.cchar())
+        category = 'NUMBER'
         word = ''
-        if self.cchar() == '0':
-            if self.nchar() == '.':
-                self.go_on()
-                while self.cchar() and self.nchar().isdigit():
-                    self.go_on()
-                word = self.source[begin:self.next_idx]
-                value = float(word)
-                category = 'Literal REAL'
-            elif self.nchar() == 'x':
-                self.go_on()
-                while self.cchar() and (self.nchar().isdigit() or self.nchar() in 'abcdefABCDEF'):
-                    self.go_on()
-                word = self.source[begin:self.next_idx]
-                value = int(word, 16)
-                category = 'Literal NUMBER'
-            elif self.nchar().isdigit():
-                self.go_on()
-                while self.cchar() and self.nchar().isdigit():
-                    self.go_on()
-                word = self.source[begin:self.next_idx]
-                value = int('0o' + word, 8)
-                category = 'Literal NUMBER'
-            else:
-                value = 0
-                category = 'Literal NUMBER'
-        elif self.nchar() == '.':
-            self.go_on()
-            while self.cchar() and self.nchar().isdigit():
-                self.go_on()
-            word = self.source[begin:self.next_idx]
-            value = float(word)
-            category = 'Literal REAL'
-        elif self.nchar().isdigit():
+        if self.nchar().isdigit():
             while self.cchar() and self.nchar().isdigit():
                 self.go_on()
             word = self.source[begin:self.next_idx]
             value = int(word)
-            category = 'Literal NUMBER'
-        else:
-            word = self.source[begin:self.next_idx]
-            value = int(word)
-            category = 'Literal NUMBER'
 
-        return category, value, word
+        return category, value, category
         
 
     def classify_symbol(self, begin):
@@ -138,17 +92,12 @@ class Lexer:
         if key in PUNCTUATORS:
             category = 'Punctuation'
             value = PUNCTUATORS[key]
-        elif self.cchar() == '"':
-            while self.nchar() != '"' and self.cchar():
-                self.go_on()
-            category = 'Literal String'
-            value = self.source[begin:self.next_idx]
-            self.go_on()
         else:
             while (key + self.nchar()) in OPERATOR and self.cchar():
                 self.go_on()
+                key += self.cchar()
         if key in OPERATOR:
             value = OPERATOR[key][0]
             category =OPERATOR[key][1]
 
-        return category, value, self.source[begin:self.next_idx]
+        return category, key, value
