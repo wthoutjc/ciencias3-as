@@ -1,11 +1,10 @@
 /* El primer programa Java Imprime la cadena Hello World */
-/*import java.util.ArrayList;
-import java.util.StringTokenizer;
+int a = 8;
+/*import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Lexer {
-
     public static void main(String[] args) {  
         int a = 8;
         int b=a+3;
@@ -42,5 +41,3 @@ public class Lexer {
 
     }
 }*/
-
-public static void main(String[] args) {}
