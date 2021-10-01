@@ -1,6 +1,6 @@
 VAR x;
-BEGIN 
+BEGIN
   x := 0;
   WHILE x < 5 DO
-    x := (x + 1
+    x := x + 1
 END.

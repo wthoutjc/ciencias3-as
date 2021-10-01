@@ -11,3 +11,5 @@ with open('lexer/Test','r') as f:
         par.parse()
         for error in par.errors:
                 print(error)
+        print(par.parse_tree)
+        par.print_tree()
