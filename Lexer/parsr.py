@@ -190,11 +190,11 @@ class Parser:
         parent.append(child) 
         self.statement(child)
 
-    def begin(self):
+    def program(self, parent):
         self.next_token()
-        parent = self.parse_tree
-        parent.append('BLOCK')
-        self.block(parent)
+        child = ['BLOCK']
+        parent.append(child)
+        self.block(child)
         self.expect('DOT')
         parent.append('DOT')
     
@@ -207,25 +207,27 @@ class Parser:
         for element in remove:
             curr.pop(element)
 
-    def print_subtree(self, tree, space, last):
+    def print_subtree(self, tree, string, last, lsep):
         self.remove_single(tree)
         sep = '├─'
+        if lsep == '└─':
+            index = string.rfind('│')
+            string = string[:index] + ' ' + string[index+1:]
+        nexts = string + '│' + ' '*(last+1)
         for i in range(len(tree)):
             if i == (len(tree) - 1):
                 sep = '└─'
-            print('│')
             if type(tree[i]) == list:
-                print(' '*space, sep, '─'*(last-1),tree[i][0], sep='')
-                self.print_subtree(tree[i][1:], space+last+1, len(tree[i][0]))
+                print(string, sep, '─'*(last-1), ' ', tree[i][0],sep='')
+                self.print_subtree(tree[i][1:], nexts, len(tree[i][0]), sep)
             else:
-                print(' '*space, sep, '─'*(last-1),tree[i], sep='')
-
+                print(string, sep, '─'*(last-1),' ',tree[i],sep='')
+                
     def print_tree(self):
         print(self.parse_tree[0])
-        self.print_subtree(self.parse_tree[1:], 0, len(self.parse_tree[0]))
+        self.print_subtree(self.parse_tree[1:], '', len(self.parse_tree[0]), '├─')
             
-
-
-
     def parse(self):
-        self.begin()
+        parent = self.parse_tree
+        parent.append('PROGRAM')
+        self.program(parent)

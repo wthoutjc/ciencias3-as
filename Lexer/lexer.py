@@ -1,12 +1,6 @@
 import re
-from token import Token
+from tokn import Token
 from keywords import *
-
-# for data in lex.tokens: #Usa este for para que visualizes mejor como funciona ahora por tupla
-#             print(data.category)
-#             print(data.position)
-#             print(data.symbol)
-#             print(data.value)
 
 class Lexer:
     def __init__(self, source_file):

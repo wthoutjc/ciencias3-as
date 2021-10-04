@@ -1,6 +1,6 @@
 VAR x;
 BEGIN
   x := 0;
-  WHILE x < 5 DO
+  WHILE (x + 2) < 5 DO
     x := x + 1
 END.
