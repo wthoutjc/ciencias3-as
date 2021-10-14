@@ -1,6 +1,16 @@
-VAR x;
+CONST h = 0, d = 1.66;
+VAR x, z : FLOAT;
+VAR y : INT;
+PROCEDURE gcd;
+  CONST a = 3;
+  VAR b: INT;
+  b := a + 2;
 BEGIN
-  x := 0;
-  WHILE (x + 2) < 5 DO
-    x := x + 1
+  y := 2.0;
+  WHILE (x + 2.5) < 5 DO
+  BEGIN
+    x := x + 1;
+    h := 5 + a;
+    CALL h
+  END
 END.

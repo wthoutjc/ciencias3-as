@@ -1,13 +1,14 @@
-
+import copy
 
 class Parser:
     
     def __init__(self, lexer):
-        self.lexer = lexer
+        self.lexer = copy.deepcopy(lexer)
         self.errors = []
         self.current_token = None
         self.parse_tree = []
         self.last = None
+        self.pars = lexer
 
     def next_token(self):
         self.current_token = self.lexer.token()
@@ -33,9 +34,11 @@ class Parser:
 
     def factor(self, parent):
         if self.match('ID'):
-            parent.append(['ID', self.last.value])
-        elif self.match('NUMBER'):
-            parent.append(['NUMBER', self.last.value])
+            parent.append([self.last, self.last.value])
+        elif self.match('INT'):
+            parent.append([self.last, self.last.value])
+        elif self.match('FLOAT'):
+            parent.append([self.last, self.last.value])
         elif self.match('LPAREN'):
             parent.append('LPAREN')
             child = ['EXPRESSION']
@@ -99,7 +102,7 @@ class Parser:
     
     def statement(self, parent):
         if self.match('ID'):
-            parent.append(['ID', self.last.value])
+            parent.append([self.last, self.last.value])
             self.expect('ASSIGN')
             parent.append('ASSIGN')
             child = ['EXPRESSION']
@@ -108,7 +111,7 @@ class Parser:
         elif self.match('CALL'):
             parent.append('CALL')
             self.expect('ID')
-            parent.append(['ID', self.last.value])
+            parent.append([self.last, self.last.value])
         elif self.match('BEGIN'):
             parent.append('BEGIN')
             child = ['STATEMENT']
@@ -150,35 +153,51 @@ class Parser:
         if self.match('CONST'):
             parent.append('CONST')
             self.expect('ID')
-            parent.append(['ID', self.last.value])
+            parent.append([self.last, self.last.value])
             self.expect('EQ')
             parent.append('EQ')
-            self.expect('NUMBER')
-            parent.append(['NUMBER', self.last.value])
+            if self.match('INT'):
+                parent.append([self.last, self.last.value])
+            elif self.match('FLOAT'):
+                parent.append([self.last, self.last.value])
+            else:
+                 self.error(f'Syntax Error:line[{self.current_token.lineno}] expected NUMBER')
             while self.match('COMMA'):
                 parent.append('COMMA')
                 self.expect('ID')
-                parent.append(['ID', self.last.value])
+                parent.append([self.last, self.last.value])
                 self.expect('EQ')
                 parent.append('EQ')
-                self.expect('NUMBER')
-                parent.append(['NUMBER', self.last.value])
+                if self.match('INT'):
+                    parent.append([self.last, self.last.value])
+                elif self.match('FLOAT'):
+                    parent.append([self.last, self.last.value])
+                else:
+                    self.error(f'Syntax Error:line[{self.current_token.lineno}] expected NUMBER')
             self.expect('SEMIC')
             parent.append('SEMICOLON')
-        if self.match('VAR'):
+        while self.match('VAR'):
             parent.append('VAR')
             self.expect('ID')
-            parent.append(['ID', self.last.value])
+            parent.append([self.last, self.last.value])
             while self.match('COMMA'):
                 parent.append('COMMA')
                 self.expect('ID')
-                parent.append(['ID', self.last.value])
+                parent.append([self.last, self.last.value])
+            self.expect('COLON')
+            parent.append('COLON')
+            if self.match('FLOAT'):
+                parent.append('FLOAT')
+            elif self.match('INT'):
+                parent.append('INT')
+            else:
+                print(f'Syntax Error:line[{self.current_token.lineno}] expected Type declaration')
             self.expect('SEMIC')
-            parent.append('SEMICOLON')
+            parent.append('SEMICOLON')      
         while self.match('PROCEDURE'):
             parent.append('PROCEDURE')
             self.expect('ID')
-            parent.append(['ID', self.last.value])
+            parent.append([self.last, self.last.value])
             self.expect('SEMIC')
             parent.append('SEMICOLON')
             child = ['BLOCK']

@@ -8,7 +8,9 @@ RESERVED = ['ODD',
             'DO', 
             'CONST', 
             'VAR', 
-            'PROCEDURE']
+            'PROCEDURE',
+            'INT',
+            'FLOAT']
     
 
 OPERATOR = {'+': ("ADD", 'Arithmetic Operator'),
@@ -23,8 +25,21 @@ OPERATOR = {'+': ("ADD", 'Arithmetic Operator'),
             "=": ("EQ", 'Relational Operator'),
             "!=": ("NEQ", 'Relational Operator')}
 
+OPINV = {'ADD': '+',
+         'SUB': '-',
+         'MUL': '*',
+         'DIV': '/', 
+         'ASSIGN': ':=',
+         'LT': '<',
+         'GT': '>',
+         'LE': '<=',
+         'GE': '>=',
+         'EQ': '=',
+         'NEQ': '!='}
+
 PUNCTUATORS = {',': 'COMMA',
                '(': 'LPAREN',
                ')': 'RPAREN',
                '.': 'DOT',
-               ';': 'SEMIC'}
+               ';': 'SEMIC',
+               ':': 'COLON'}

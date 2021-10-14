@@ -6,8 +6,11 @@ class Token:
       self.value = value
       self.lineno = line
 
-   def __str__(self):
-      return f'{self.value:^20} {self.category:<22} {self.type:^20} {self.position[0]:8d}'
-
    def __repr__(self):
+      return f'{self.type}'
+
+   def __len__(self):
+      return len(self.type)
+
+   def ptoken(self):
       return f'{self.value:^20} {self.category:<22} {self.type:^20} {self.position[0]:8d}'

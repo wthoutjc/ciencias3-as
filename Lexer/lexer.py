@@ -73,13 +73,21 @@ class Lexer:
     
     def classify_number(self, begin):
         value = int(self.cchar())
-        category = 'NUMBER'
+        category = 'INT'
         word = ''
         if self.nchar().isdigit():
             while self.cchar() and self.nchar().isdigit():
                 self.go_on()
             word = self.source[begin:self.next_idx]
             value = int(word)
+        elif self.nchar() == '.':
+            self.go_on()
+            while self.cchar() and self.nchar().isdigit():
+                self.go_on()
+            word = self.source[begin:self.next_idx]
+            value = float(word)
+            category = 'FLOAT'
+            
 
         return category, value, category
         
@@ -88,15 +96,15 @@ class Lexer:
         value = 'Unknown'
         category = 'Unknown'
         key = self.cchar()
-        if key in PUNCTUATORS:
-            category = 'Punctuation'
-            value = PUNCTUATORS[key]
-        else:
-            while (key + self.nchar()) in OPERATOR and self.cchar():
+        while (key + self.nchar()) in OPERATOR and self.cchar():
                 self.go_on()
                 key += self.cchar()
         if key in OPERATOR:
             value = OPERATOR[key][0]
             category =OPERATOR[key][1]
+        if key in PUNCTUATORS:
+            category = 'Punctuation'
+            value = PUNCTUATORS[key]
+            
 
         return category, key, value
